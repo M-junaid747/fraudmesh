@@ -15,6 +15,7 @@ class TransactionOut(BaseModel):
     amount: float
     flagged: bool
     reason: Optional[str] = None
+    fingerprint: Optional[str] = None
 
     class Config:
         from_attributes = True

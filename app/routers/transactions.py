@@ -4,6 +4,7 @@ from app.database import get_bank_session
 from app.models import Transaction
 from app.schemas import TransactionIn, TransactionOut
 from app.rules import evaluate_rules
+from app.fingerprint import make_fingerprint
 
 router = APIRouter(prefix="/banks/{bank_id}/transactions", tags=["transactions"])
 
@@ -20,6 +21,10 @@ def create_transaction(bank_id: str, payload: TransactionIn):
 
     flagged, reason = evaluate_rules(payload.amount, payload.device_id)
 
+    fingerprint = None
+    if flagged:
+        fingerprint = make_fingerprint(payload.name, payload.dob, payload.account_last4)
+
     txn = Transaction(
         name=payload.name,
         dob=payload.dob,
@@ -28,6 +33,7 @@ def create_transaction(bank_id: str, payload: TransactionIn):
         device_id=payload.device_id,
         flagged=flagged,
         reason=reason,
+        fingerprint=fingerprint
     )
     session.add(txn)
     session.commit()

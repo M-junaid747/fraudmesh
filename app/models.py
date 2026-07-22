@@ -15,3 +15,4 @@ class Transaction(BankBase):
     timestamp = Column(DateTime, default=datetime.utcnow)
     flagged = Column(Boolean, default=False)
     reason = Column(String, nullable=True)
+    fingerprint = Column(String, nullable=True)
