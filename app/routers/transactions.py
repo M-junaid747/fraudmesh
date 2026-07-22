@@ -5,6 +5,7 @@ from app.models import Transaction
 from app.schemas import TransactionIn, TransactionOut
 from app.rules import evaluate_rules
 from app.fingerprint import make_fingerprint
+from app.watchlist_service import process_fingerprint
 
 router = APIRouter(prefix="/banks/{bank_id}/transactions", tags=["transactions"])
 
@@ -39,5 +40,8 @@ def create_transaction(bank_id: str, payload: TransactionIn):
     session.commit()
     session.refresh(txn)
     session.close()
+
+    if flagged:
+        process_fingerprint(fingerprint, bank_id)
 
     return txn
