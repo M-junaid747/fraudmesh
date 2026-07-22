@@ -15,13 +15,39 @@ def _validate_bank(bank_id: str):
         raise HTTPException(status_code=404, detail=f"Unknown bank '{bank_id}'")
 
 
+@router.get("")
+def list_transactions(bank_id: str, limit: int = 25):
+    """Returns this bank's own recent transactions. Never leaves this bank's
+    database — this is purely for that bank's own operators to review."""
+    _validate_bank(bank_id)
+    session = get_bank_session(bank_id)
+    txns = (
+        session.query(Transaction)
+        .order_by(Transaction.timestamp.desc())
+        .limit(limit)
+        .all()
+    )
+    session.close()
+    return [
+        {
+            "id": t.id,
+            "name": t.name,
+            "account_last4": t.account_last4,
+            "amount": t.amount,
+            "flagged": t.flagged,
+            "reason": t.reason,
+            "timestamp": t.timestamp,
+        }
+        for t in txns
+    ]
+
+
 @router.post("", response_model=TransactionOut)
 def create_transaction(bank_id: str, payload: TransactionIn):
     _validate_bank(bank_id)
     session = get_bank_session(bank_id)
 
     flagged, reason = evaluate_rules(payload.amount, payload.device_id)
-
     fingerprint = None
     if flagged:
         fingerprint = make_fingerprint(payload.name, payload.dob, payload.account_last4)
@@ -34,7 +60,7 @@ def create_transaction(bank_id: str, payload: TransactionIn):
         device_id=payload.device_id,
         flagged=flagged,
         reason=reason,
-        fingerprint=fingerprint
+        fingerprint=fingerprint,
     )
     session.add(txn)
     session.commit()
