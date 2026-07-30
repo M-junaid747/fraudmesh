@@ -19,3 +19,8 @@ class TransactionOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class BankIn(BaseModel):
+    bank_id: str
+    display_name: Optional[str] = None

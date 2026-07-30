@@ -8,9 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F5F6F8; --surface:#FFFFFF; --surface-alt:#F1F3F6;
-    --line:#E3E6EB; --text:#1B1F27; --text-dim:#6B7280;
-    --primary:#1E3A5F; --primary-100:#E9EEF4;
+    --bg:#EEF1F6; --surface:#FFFFFF; --surface-alt:#E6EBF3;
+    --line:#DDE3EC; --text:#1B1F27; --text-dim:#606A7A;
+    --primary:#1E3A5F; --primary-dark:#152A45; --primary-100:#E4EAF2;
+    --teal:#0F766E; --teal-100:#E3F4F2;
+    --amber:#B45309; --amber-100:#FBEEE0;
     --danger:#B3261E; --danger-100:#FBEAE9;
     --success:#2F7D5D; --success-100:#EAF6F0;
     --radius:8px; --header-h:56px;
@@ -28,30 +30,32 @@
  
   /* ===== layout shell ===== */
   .app{display:flex;flex-direction:column;min-height:100vh;}
-  header.topbar{height:var(--header-h);flex-shrink:0;background:var(--surface);
-    border-bottom:1px solid var(--line);display:flex;align-items:center;
-    justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:10;}
+  header.topbar{height:var(--header-h);flex-shrink:0;background:var(--primary);
+    display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+    position:sticky;top:0;z-index:10;box-shadow:0 1px 3px rgba(21,42,69,0.15);}
   .brand{display:flex;align-items:center;gap:10px;}
   .brand-mark{width:26px;height:26px;flex-shrink:0;}
-  .brand span{font-weight:700;font-size:15px;letter-spacing:-0.01em;}
-  .topbar-right{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--text-dim);}
-  .env-tag{background:var(--surface-alt);border:1px solid var(--line);border-radius:4px;
-    padding:3px 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .brand span{font-weight:700;font-size:15px;letter-spacing:-0.01em;color:#fff;}
+  .topbar-right{display:flex;align-items:center;gap:16px;font-size:12px;color:#C9D4E3;}
+  .env-tag{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);
+    border-radius:4px;padding:3px 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#fff;}
   .status-dot{display:inline-flex;align-items:center;gap:6px;}
-  .status-dot i{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block;}
+  .status-dot i{width:7px;height:7px;border-radius:50%;background:#4ADE80;display:inline-block;
+    box-shadow:0 0 0 3px rgba(74,222,128,0.2);}
  
   .layout{display:flex;flex:1;}
-  aside.sidebar{width:210px;flex-shrink:0;background:var(--surface);
+  aside.sidebar{width:212px;flex-shrink:0;background:var(--surface-alt);
     border-right:1px solid var(--line);padding:16px 10px;}
   nav.side-nav{display:flex;flex-direction:column;gap:2px;}
   nav.side-nav button{display:flex;align-items:center;gap:10px;background:transparent;
-    border:none;text-align:left;padding:9px 12px;border-radius:6px;color:var(--text-dim);
-    font-size:13.5px;cursor:pointer;transition:background .12s,color .12s;}
-  nav.side-nav button:hover{background:var(--surface-alt);color:var(--text);}
-  nav.side-nav button.active{background:var(--primary-100);color:var(--primary);font-weight:600;}
+    border:none;border-left:3px solid transparent;text-align:left;padding:9px 10px;border-radius:6px;
+    color:var(--text-dim);font-size:13.5px;cursor:pointer;transition:background .12s,color .12s;}
+  nav.side-nav button:hover{background:rgba(30,58,95,0.06);color:var(--text);}
+  nav.side-nav button.active{background:var(--surface);color:var(--primary);font-weight:600;
+    border-left-color:var(--primary);box-shadow:0 1px 2px rgba(21,42,69,0.06);}
   nav.side-nav svg{width:16px;height:16px;flex-shrink:0;}
-  .sidebar-note{margin-top:20px;padding:12px;background:var(--surface-alt);border-radius:6px;
-    font-size:11.5px;color:var(--text-dim);line-height:1.5;}
+  .sidebar-note{margin-top:20px;padding:12px;background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;font-size:11.5px;color:var(--text-dim);line-height:1.5;}
  
   .content-wrap{flex:1;display:flex;flex-direction:column;min-width:0;}
   main{flex:1;padding:26px 32px;max-width:1040px;width:100%;margin:0 auto;}
@@ -62,6 +66,8 @@
     .layout{flex-direction:column;}
     aside.sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);}
     nav.side-nav{flex-direction:row;overflow-x:auto;}
+    nav.side-nav button{border-left:none;border-bottom:3px solid transparent;}
+    nav.side-nav button.active{border-left-color:transparent;border-bottom-color:var(--primary);}
     .sidebar-note{display:none;}
     main{padding:18px;}
   }
@@ -73,11 +79,14 @@
  
   /* ===== cards / stats ===== */
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px;}
-  .stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;}
+  .stat-card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--c);
+    border-radius:var(--radius);padding:16px 18px;}
   .stat-card .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);}
-  .stat-card .value{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;margin-top:6px;}
-  .stat-card.danger .value{color:var(--danger);}
-  .stat-card.primary .value{color:var(--primary);}
+  .stat-card .value{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;margin-top:6px;color:var(--c);}
+  .stat-card.c-blue{--c:var(--primary);}
+  .stat-card.c-teal{--c:var(--teal);}
+  .stat-card.c-amber{--c:var(--amber);}
+  .stat-card.c-danger{--c:var(--danger);}
  
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);}
   .card-head{padding:14px 18px;border-bottom:1px solid var(--line);
@@ -92,9 +101,9 @@
   .diagram-wrap{display:flex;justify-content:center;padding:20px 0 6px;}
   .diagram-wrap svg{width:100%;max-width:520px;height:auto;}
   .node-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;fill:var(--text-dim);}
-  .node-circle{fill:var(--surface);stroke:var(--text-dim);stroke-width:1.2;}
-  .hub-circle{fill:var(--primary-100);stroke:var(--primary);stroke-width:1.4;}
-  .mesh-line{stroke:var(--line);stroke-width:1.4;}
+  .node-circle{fill:var(--teal-100);stroke:var(--teal);stroke-width:1.3;}
+  .hub-circle{fill:var(--primary-100);stroke:var(--primary);stroke-width:1.5;}
+  .mesh-line{stroke:#C7D0DE;stroke-width:1.6;}
   .mesh-line.alert-flash{stroke:var(--danger);transition:stroke .25s;}
  
   /* ===== tables ===== */
@@ -108,7 +117,7 @@
  
   .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;}
   .badge.proactive{background:var(--primary-100);color:var(--primary);}
-  .badge.reactive{background:var(--danger-100);color:var(--danger);}
+  .badge.reactive{background:var(--amber-100);color:var(--amber);}
   .badge.flagged{background:var(--danger-100);color:var(--danger);}
   .badge.clean{background:var(--success-100);color:var(--success);}
  
@@ -121,9 +130,9 @@
  
   /* ===== bank grid (Banks page) ===== */
   .bank-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
-  .bank-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    padding:16px 18px;cursor:pointer;transition:border-color .12s,box-shadow .12s;}
-  .bank-card:hover{border-color:var(--primary);box-shadow:0 1px 4px rgba(30,58,95,0.08);}
+  .bank-card{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--teal);
+    border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:border-color .12s,box-shadow .12s;}
+  .bank-card:hover{border-color:var(--primary);border-left-color:var(--primary);box-shadow:0 1px 4px rgba(30,58,95,0.1);}
   .bank-card h3{font-size:14px;font-family:'IBM Plex Mono',monospace;}
   .bank-card .row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-dim);margin-top:10px;}
   .bank-card .row b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-weight:600;}
@@ -140,10 +149,10 @@
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   button.submit{margin-top:4px;background:var(--primary);color:#fff;border:none;border-radius:6px;
     padding:10px;font-weight:600;font-size:13.5px;cursor:pointer;}
-  button.submit:hover{background:#17304e;}
+  button.submit:hover{background:var(--primary-dark);}
   button.secondary{background:var(--surface);border:1px solid var(--line);border-radius:6px;
     padding:9px 14px;font-size:13px;color:var(--text);cursor:pointer;}
-  button.secondary:hover{border-color:var(--primary);}
+  button.secondary:hover{border-color:var(--primary);color:var(--primary);}
   .hint{font-size:11.5px;color:var(--text-dim);}
  
   .result{margin-top:12px;padding:11px 13px;border-radius:6px;font-size:13px;display:none;border:1px solid transparent;}
@@ -162,12 +171,12 @@
   <header class="topbar">
     <div class="brand">
       <svg class="brand-mark" viewBox="0 0 40 40">
-        <circle cx="20" cy="20" r="4" fill="#1E3A5F"/>
-        <circle cx="7" cy="8" r="3" fill="#8C9AAE"/><circle cx="33" cy="8" r="3" fill="#8C9AAE"/>
-        <circle cx="20" cy="34" r="3" fill="#8C9AAE"/>
-        <line x1="20" y1="20" x2="7" y2="8" stroke="#B7C1CE" stroke-width="1"/>
-        <line x1="20" y1="20" x2="33" y2="8" stroke="#B7C1CE" stroke-width="1"/>
-        <line x1="20" y1="20" x2="20" y2="34" stroke="#B7C1CE" stroke-width="1"/>
+        <circle cx="20" cy="20" r="4" fill="#4ADE80"/>
+        <circle cx="7" cy="8" r="3" fill="#8FB3D9"/><circle cx="33" cy="8" r="3" fill="#8FB3D9"/>
+        <circle cx="20" cy="34" r="3" fill="#8FB3D9"/>
+        <line x1="20" y1="20" x2="7" y2="8" stroke="#4A648A" stroke-width="1"/>
+        <line x1="20" y1="20" x2="33" y2="8" stroke="#4A648A" stroke-width="1"/>
+        <line x1="20" y1="20" x2="20" y2="34" stroke="#4A648A" stroke-width="1"/>
       </svg>
       <span>FraudMesh</span>
     </div>
@@ -211,30 +220,16 @@
           </div>
  
           <div class="stat-grid">
-            <div class="stat-card"><div class="eyebrow">Transactions seen</div><div class="value" id="stat-total">—</div></div>
-            <div class="stat-card primary"><div class="eyebrow">Flagged locally</div><div class="value" id="stat-flagged">—</div></div>
-            <div class="stat-card"><div class="eyebrow">Watchlist size</div><div class="value" id="stat-watchlist">—</div></div>
-            <div class="stat-card danger"><div class="eyebrow">Cross-bank alerts</div><div class="value" id="stat-alerts">—</div></div>
+            <div class="stat-card c-blue"><div class="eyebrow">Transactions seen</div><div class="value" id="stat-total">—</div></div>
+            <div class="stat-card c-teal"><div class="eyebrow">Flagged locally</div><div class="value" id="stat-flagged">—</div></div>
+            <div class="stat-card c-amber"><div class="eyebrow">Watchlist size</div><div class="value" id="stat-watchlist">—</div></div>
+            <div class="stat-card c-danger"><div class="eyebrow">Cross-bank alerts</div><div class="value" id="stat-alerts">—</div></div>
           </div>
  
           <div class="card block">
-            <div class="card-head"><h2>Network topology</h2><span class="meta">3 banks · 1 shared ledger</span></div>
+            <div class="card-head"><h2>Network topology</h2><span class="meta" id="topology-meta">— banks · 1 shared ledger</span></div>
             <div class="card-body">
-              <div class="diagram-wrap">
-                <svg viewBox="0 0 520 190">
-                  <line id="line-a" class="mesh-line" x1="130" y1="50" x2="260" y2="120"/>
-                  <line id="line-b" class="mesh-line" x1="390" y1="50" x2="260" y2="120"/>
-                  <line id="line-c" class="mesh-line" x1="260" y1="170" x2="260" y2="120"/>
-                  <circle class="hub-circle" cx="260" cy="120" r="22"/>
-                  <text x="260" y="124" text-anchor="middle" class="node-label" font-weight="600">SHARED</text>
-                  <circle class="node-circle" cx="130" cy="50" r="18"/>
-                  <text x="130" y="54" text-anchor="middle" class="node-label">bank_a</text>
-                  <circle class="node-circle" cx="390" cy="50" r="18"/>
-                  <text x="390" y="54" text-anchor="middle" class="node-label">bank_b</text>
-                  <circle class="node-circle" cx="260" cy="170" r="18"/>
-                  <text x="260" y="174" text-anchor="middle" class="node-label">bank_c</text>
-                </svg>
-              </div>
+              <div class="diagram-wrap"><svg viewBox="0 0 520 190" id="mesh-svg"></svg></div>
             </div>
           </div>
  
@@ -253,6 +248,26 @@
         <section class="view hidden" id="view-banks">
           <div class="page-head"><h1>Banks</h1><p>Each bank runs independent rule checks on its own private data.</p></div>
  
+          <div class="card block">
+            <div class="card-head"><h2>Add a bank</h2></div>
+            <div class="card-body">
+              <form id="bank-form" class="row2" style="align-items:end;">
+                <div>
+                  <label for="b-id">Bank ID (used in URLs)</label>
+                  <input id="b-id" required placeholder="bank_d" pattern="[a-z][a-z0-9_]{1,31}">
+                </div>
+                <div>
+                  <label for="b-name">Display name</label>
+                  <input id="b-name" placeholder="Bank D">
+                </div>
+                <div style="grid-column:1/-1;display:flex;align-items:center;gap:12px;">
+                  <button class="submit" type="submit" style="margin-top:0;">Add bank</button>
+                  <span class="hint" id="bank-form-msg"></span>
+                </div>
+              </form>
+            </div>
+          </div>
+ 
           <div id="bank-grid-wrap">
             <div class="bank-grid" id="bank-grid"></div>
           </div>
@@ -260,7 +275,7 @@
           <div id="bank-detail-wrap" class="hidden">
             <a href="#" class="back-link" id="bank-back">← all banks</a>
             <div class="card">
-              <div class="card-head"><h2 id="bank-detail-title">bank_a — watchlist</h2></div>
+              <div class="card-head"><h2 id="bank-detail-title">watchlist</h2></div>
               <div class="card-body" style="padding:0;">
                 <table>
                   <thead><tr><th class="fp">Fingerprint</th><th>Source bank</th><th>Match count</th></tr></thead>
@@ -325,12 +340,7 @@
           <div class="card block">
             <div class="card-head">
               <h2>Alert log</h2>
-              <select id="alert-filter">
-                <option value="all">all banks</option>
-                <option value="bank_a">bank_a</option>
-                <option value="bank_b">bank_b</option>
-                <option value="bank_c">bank_c</option>
-              </select>
+              <select id="alert-filter"><option value="all">all banks</option></select>
             </div>
             <div class="card-body" style="padding:0;">
               <table>
@@ -351,11 +361,53 @@
 </div>
  
 <script>
-const BANKS = ["bank_a", "bank_b", "bank_c"];
-let activeBank = BANKS[0];
-let activeDetailBank = null;
+let BANKS = [];              // fetched from /banks — never hardcoded
+let activeBank = null;
 let allAlerts = [];
 let lastAlertCount = 0;
+ 
+/* ---------- bank registry (single source of truth: the backend) ---------- */
+async function loadBankRegistry(){
+  const r = await fetch("/banks");
+  const data = await r.json();
+  BANKS = data.banks;
+  activeBank = BANKS[0];
+ 
+  document.getElementById("topology-meta").textContent = `${BANKS.length} banks · 1 shared ledger`;
+  buildMeshDiagram();
+ 
+  const filterSel = document.getElementById("alert-filter");
+  filterSel.innerHTML = '<option value="all">all banks</option>';
+  BANKS.forEach(b => {
+    const opt = document.createElement("option");
+    opt.value = b; opt.textContent = b;
+    filterSel.appendChild(opt);
+  });
+ 
+  if (!BANKS.includes(activeBank)) activeBank = BANKS[0] || null;
+}
+ 
+/* builds the topology SVG for however many banks exist, arranged in a circle around the hub */
+function buildMeshDiagram(){
+  const svg = document.getElementById("mesh-svg");
+  const cx = 260, cy = 100, r = 75;
+  let html = "";
+  const positions = BANKS.map((b, i) => {
+    const angle = (2 * Math.PI * i / BANKS.length) - Math.PI/2;
+    return { id: b, x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  });
+  positions.forEach(p => {
+    html += `<line class="mesh-line" x1="${p.x.toFixed(0)}" y1="${p.y.toFixed(0)}" x2="${cx}" y2="${cy}"/>`;
+  });
+  html += `<circle class="hub-circle" cx="${cx}" cy="${cy}" r="22"/>
+    <text x="${cx}" y="${cy+4}" text-anchor="middle" class="node-label" font-weight="600">SHARED</text>`;
+  positions.forEach(p => {
+    html += `<circle class="node-circle" cx="${p.x.toFixed(0)}" cy="${p.y.toFixed(0)}" r="18"/>
+      <text x="${p.x.toFixed(0)}" y="${(p.y+4).toFixed(0)}" text-anchor="middle" class="node-label">${p.id}</text>`;
+  });
+  svg.setAttribute("viewBox", `0 0 520 ${cy + r + 40}`);
+  svg.innerHTML = html;
+}
  
 /* ---------- primary nav ---------- */
 function showView(name){
@@ -391,7 +443,6 @@ async function loadSummary(){
     document.getElementById("stat-flagged").textContent = flagged;
     document.getElementById("stat-watchlist").textContent = data.total_watchlist_entries;
     document.getElementById("stat-alerts").textContent = data.total_alerts;
-    window._lastSummary = data;
   }catch(e){ console.error("summary load failed", e); }
 }
  
@@ -438,15 +489,27 @@ async function loadBankGrid(){
       card.className = "bank-card";
       card.innerHTML = `<h3>${b.bank_id}</h3>
         <div class="row"><span>Transactions</span><b>${b.total_transactions}</b></div>
-        <div class="row"><span>Flagged</span><b>${b.flagged}</b></div>`;
-      card.onclick = () => openBankDetail(b.bank_id);
+        <div class="row"><span>Flagged</span><b>${b.flagged}</b></div>
+        <div class="row"><a href="#" class="remove-bank-link" data-bank="${b.bank_id}" style="font-size:11.5px;">remove from network</a></div>`;
+      card.onclick = (e) => { if (!e.target.classList.contains("remove-bank-link")) openBankDetail(b.bank_id); };
       grid.appendChild(card);
+    });
+    document.querySelectorAll(".remove-bank-link").forEach(link => {
+      link.onclick = async (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const id = link.dataset.bank;
+        if (!confirm(`Remove ${id} from the network? Its historical data is kept, just no longer active.`)) return;
+        try{
+          await fetch(`/banks/${id}`, { method: "DELETE" });
+          await loadBankRegistry();
+          loadBankGrid();
+        }catch(err){ console.error("delete bank failed", err); }
+      };
     });
   }catch(e){ console.error("bank grid load failed", e); }
 }
  
 async function openBankDetail(bankId){
-  activeDetailBank = bankId;
   document.getElementById("bank-grid-wrap").classList.add("hidden");
   document.getElementById("bank-detail-wrap").classList.remove("hidden");
   document.getElementById("bank-detail-title").textContent = `${bankId} — watchlist`;
@@ -461,6 +524,29 @@ async function openBankDetail(bankId){
   }catch(e){ console.error("watchlist load failed", e); }
 }
 document.getElementById("bank-back").onclick = (e) => { e.preventDefault(); loadBankGrid(); };
+ 
+document.getElementById("bank-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const msg = document.getElementById("bank-form-msg");
+  const bankId = document.getElementById("b-id").value.trim().toLowerCase();
+  const displayName = document.getElementById("b-name").value.trim();
+  msg.textContent = "Adding…"; msg.style.color = "var(--text-dim)";
+  try{
+    const r = await fetch("/banks", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ bank_id: bankId, display_name: displayName || null })
+    });
+    const data = await r.json();
+    if (!r.ok){ msg.textContent = data.detail || "Failed to add bank."; msg.style.color = "var(--danger)"; return; }
+    msg.textContent = `${data.bank_id} added.`; msg.style.color = "var(--success)";
+    document.getElementById("bank-form").reset();
+    await loadBankRegistry();
+    loadBankGrid();
+  }catch(e){
+    msg.textContent = "Request failed."; msg.style.color = "var(--danger)";
+  }
+});
  
 /* ---------- transactions ---------- */
 function renderTxnPills(){
@@ -540,8 +626,11 @@ function renderAlerts(){
 document.getElementById("alert-filter").onchange = renderAlerts;
  
 /* ---------- boot ---------- */
-loadSummary(); loadAlerts();
-setInterval(() => { loadSummary(); loadAlerts(); }, 6000);
+(async function init(){
+  await loadBankRegistry();
+  loadSummary(); loadAlerts();
+  setInterval(() => { loadSummary(); loadAlerts(); }, 6000);
+})();
 </script>
 </body>
 </html>

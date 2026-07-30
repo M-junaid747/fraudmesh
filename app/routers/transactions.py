@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.config import BANKS
+from app.bank_registry import bank_exists
 from app.database import get_bank_session
 from app.models import Transaction
 from app.schemas import TransactionIn, TransactionOut
@@ -11,14 +11,12 @@ router = APIRouter(prefix="/banks/{bank_id}/transactions", tags=["transactions"]
 
 
 def _validate_bank(bank_id: str):
-    if bank_id not in BANKS:
+    if not bank_exists(bank_id):
         raise HTTPException(status_code=404, detail=f"Unknown bank '{bank_id}'")
 
 
 @router.get("")
 def list_transactions(bank_id: str, limit: int = 25):
-    """Returns this bank's own recent transactions. Never leaves this bank's
-    database — this is purely for that bank's own operators to review."""
     _validate_bank(bank_id)
     session = get_bank_session(bank_id)
     txns = (

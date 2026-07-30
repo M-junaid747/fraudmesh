@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.config import BANKS
+from app.bank_registry import get_bank_ids
 from app.database import get_shared_session, get_bank_session
 from app.models import Alert, WatchlistEntry, Transaction
 
@@ -22,13 +22,11 @@ def get_alerts():
         for a in alerts
     ]
 
+
 @router.get("/summary")
 def get_summary():
-    """Aggregates counts across every bank plus the shared network state.
-    Each bank's transaction count is read from its own private database —
-    the dashboard never touches raw transaction data, only totals."""
     banks_summary = []
-    for bank_id in BANKS:
+    for bank_id in get_bank_ids():
         session = get_bank_session(bank_id)
         total = session.query(Transaction).count()
         flagged = session.query(Transaction).filter_by(flagged=True).count()

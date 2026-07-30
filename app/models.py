@@ -17,6 +17,15 @@ class Transaction(BankBase):
     reason = Column(String, nullable=True)
     fingerprint = Column(String, nullable=True)
 
+
+class Bank(SharedBase):
+    __tablename__ = "banks"
+
+    id = Column(String, primary_key=True)  # slug used in URLs and as the sqlite filename
+    display_name = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 class WatchlistEntry(SharedBase):
     __tablename__ = "watchlist"
 
