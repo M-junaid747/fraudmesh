@@ -3,325 +3,375 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FraudMesh — Signal Console</title>
+<title>FraudMesh — Fraud Signal Network</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0E1420; --surface:#161D2B; --surface-2:#1E2636;
-    --line:rgba(232,230,222,0.09); --text:#E8E6DE; --text-dim:#8B93A6;
-    --gold:#C9A227; --teal:#3E7C8C; --danger:#C1443C;
-    --radius:10px;
+    --bg:#F5F6F8; --surface:#FFFFFF; --surface-alt:#F1F3F6;
+    --line:#E3E6EB; --text:#1B1F27; --text-dim:#6B7280;
+    --primary:#1E3A5F; --primary-100:#E9EEF4;
+    --danger:#B3261E; --danger-100:#FBEAE9;
+    --success:#2F7D5D; --success-100:#EAF6F0;
+    --radius:8px; --header-h:56px;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--text);
-    font-family:'IBM Plex Sans',sans-serif;line-height:1.5;}
-  h1,h2,h3{font-family:'Space Grotesk',sans-serif;margin:0;}
+    font-family:'Inter',sans-serif;line-height:1.5;font-size:14px;}
+  h1,h2,h3{font-family:'Inter',sans-serif;margin:0;font-weight:600;}
   .mono{font-family:'IBM Plex Mono',monospace;}
-  a{color:var(--gold);}
-  :focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+  a{color:var(--primary);text-decoration:none;}
+  a:hover{text-decoration:underline;}
   button{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:1px;}
   .hidden{display:none !important;}
-
-  header{padding:20px clamp(16px,4vw,48px);
-    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
-    border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:10;}
-  .brand{display:flex;align-items:center;gap:12px;}
-  .brand-mark{width:32px;height:32px;flex-shrink:0;}
-  .brand h1{font-size:20px;letter-spacing:0.01em;}
-  .brand p{margin:1px 0 0;color:var(--text-dim);font-size:12px;}
-  nav.primary{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);
-    border-radius:24px;padding:4px;}
-  nav.primary button{background:transparent;border:none;color:var(--text-dim);
-    font-size:13px;padding:8px 16px;border-radius:20px;cursor:pointer;transition:all .15s;}
-  nav.primary button:hover{color:var(--text);}
-  nav.primary button.active{background:var(--surface-2);color:var(--gold);}
-  .status{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;
-    font-size:11px;color:var(--text-dim);}
-  .status .dot{width:8px;height:8px;border-radius:50%;background:#4CA771;
-    box-shadow:0 0 0 3px rgba(76,167,113,0.18);}
-
-  main{max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 60px;}
-  .view{padding-top:8px;}
-
-  .mesh-panel{padding:36px 0 8px;display:flex;justify-content:center;}
-  .mesh-panel svg{width:100%;max-width:620px;height:auto;}
-  .node-label{font-family:'IBM Plex Mono',monospace;font-size:11px;fill:var(--text-dim);}
-  .node-circle{fill:var(--surface-2);stroke:var(--teal);stroke-width:1.4;cursor:pointer;transition:stroke .15s;}
-  .node-circle:hover{stroke:var(--gold);}
-  .hub-circle{fill:var(--surface-2);stroke:var(--gold);stroke-width:1.6;}
-  .mesh-line{stroke:var(--teal);stroke-width:1;stroke-dasharray:4 5;opacity:0.55;
-    animation:flow 6s linear infinite;}
-  @keyframes flow{to{stroke-dashoffset:-90;}}
-  .pulse-ring{fill:none;stroke:var(--danger);stroke-width:2;opacity:0;}
-  .pulse-ring.active{animation:pulse 1.1s ease-out;}
-  @keyframes pulse{0%{opacity:0.9;r:26;} 100%{opacity:0;r:52;}}
-  .mesh-hint{text-align:center;font-size:11px;color:var(--text-dim);margin-top:-6px;}
-  @media (prefers-reduced-motion: reduce){
-    .mesh-line{animation:none;} .pulse-ring.active{animation:none;}
+ 
+  /* ===== layout shell ===== */
+  .app{display:flex;flex-direction:column;min-height:100vh;}
+  header.topbar{height:var(--header-h);flex-shrink:0;background:var(--surface);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;
+    justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:10;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{width:26px;height:26px;flex-shrink:0;}
+  .brand span{font-weight:700;font-size:15px;letter-spacing:-0.01em;}
+  .topbar-right{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--text-dim);}
+  .env-tag{background:var(--surface-alt);border:1px solid var(--line);border-radius:4px;
+    padding:3px 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .status-dot{display:inline-flex;align-items:center;gap:6px;}
+  .status-dot i{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block;}
+ 
+  .layout{display:flex;flex:1;}
+  aside.sidebar{width:210px;flex-shrink:0;background:var(--surface);
+    border-right:1px solid var(--line);padding:16px 10px;}
+  nav.side-nav{display:flex;flex-direction:column;gap:2px;}
+  nav.side-nav button{display:flex;align-items:center;gap:10px;background:transparent;
+    border:none;text-align:left;padding:9px 12px;border-radius:6px;color:var(--text-dim);
+    font-size:13.5px;cursor:pointer;transition:background .12s,color .12s;}
+  nav.side-nav button:hover{background:var(--surface-alt);color:var(--text);}
+  nav.side-nav button.active{background:var(--primary-100);color:var(--primary);font-weight:600;}
+  nav.side-nav svg{width:16px;height:16px;flex-shrink:0;}
+  .sidebar-note{margin-top:20px;padding:12px;background:var(--surface-alt);border-radius:6px;
+    font-size:11.5px;color:var(--text-dim);line-height:1.5;}
+ 
+  .content-wrap{flex:1;display:flex;flex-direction:column;min-width:0;}
+  main{flex:1;padding:26px 32px;max-width:1040px;width:100%;margin:0 auto;}
+  footer.site-footer{border-top:1px solid var(--line);padding:14px 32px;
+    font-size:12px;color:var(--text-dim);text-align:center;background:var(--surface);}
+ 
+  @media (max-width:760px){
+    .layout{flex-direction:column;}
+    aside.sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);}
+    nav.side-nav{flex-direction:row;overflow-x:auto;}
+    .sidebar-note{display:none;}
+    main{padding:18px;}
   }
-
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);
-    overflow:hidden;margin:28px 0;}
-  .stat{background:var(--surface);padding:18px 20px;}
-  .stat .eyebrow{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
-  .stat .value{font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:500;margin-top:6px;}
-  .stat.danger .value{color:var(--danger);}
-  .stat.gold .value{color:var(--gold);}
-
-  section.block{margin:34px 0;}
-  .block-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
-  .block-head h2{font-size:15px;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-dim);}
-  .block-head span{font-size:12px;color:var(--text-dim);}
-
-  table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);
-    overflow:hidden;border:1px solid var(--line);}
-  th,td{padding:10px 14px;text-align:left;font-size:13px;border-bottom:1px solid var(--line);}
-  th{color:var(--text-dim);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;}
+ 
+  /* ===== page header ===== */
+  .page-head{margin-bottom:22px;}
+  .page-head h1{font-size:19px;}
+  .page-head p{margin:4px 0 0;color:var(--text-dim);font-size:13px;}
+ 
+  /* ===== cards / stats ===== */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px;}
+  .stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;}
+  .stat-card .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-dim);}
+  .stat-card .value{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;margin-top:6px;}
+  .stat-card.danger .value{color:var(--danger);}
+  .stat-card.primary .value{color:var(--primary);}
+ 
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);}
+  .card-head{padding:14px 18px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .card-head h2{font-size:13.5px;}
+  .card-head .meta{font-size:12px;color:var(--text-dim);}
+  .card-body{padding:16px 18px;}
+ 
+  section.block{margin-bottom:28px;}
+ 
+  /* ===== network diagram (static, no animation) ===== */
+  .diagram-wrap{display:flex;justify-content:center;padding:20px 0 6px;}
+  .diagram-wrap svg{width:100%;max-width:520px;height:auto;}
+  .node-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;fill:var(--text-dim);}
+  .node-circle{fill:var(--surface);stroke:var(--text-dim);stroke-width:1.2;}
+  .hub-circle{fill:var(--primary-100);stroke:var(--primary);stroke-width:1.4;}
+  .mesh-line{stroke:var(--line);stroke-width:1.4;}
+  .mesh-line.alert-flash{stroke:var(--danger);transition:stroke .25s;}
+ 
+  /* ===== tables ===== */
+  table{width:100%;border-collapse:collapse;}
+  th,td{padding:9px 12px;text-align:left;font-size:13px;border-bottom:1px solid var(--line);}
+  th{color:var(--text-dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
+    background:var(--surface-alt);}
   tr:last-child td{border-bottom:none;}
   td.fp, th.fp{font-family:'IBM Plex Mono',monospace;font-size:12px;}
-  .empty-row td{color:var(--text-dim);font-style:italic;padding:18px 14px;}
-
-  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;
-    font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;}
-  .badge.proactive{background:rgba(201,162,39,0.15);color:var(--gold);border:1px solid rgba(201,162,39,0.35);}
-  .badge.reactive{background:rgba(193,68,60,0.15);color:var(--danger);border:1px solid rgba(193,68,60,0.35);}
-  .badge.flagged{background:rgba(193,68,60,0.15);color:var(--danger);border:1px solid rgba(193,68,60,0.35);}
-  .badge.clean{background:rgba(76,167,113,0.12);color:#7FCB9C;border:1px solid rgba(76,167,113,0.3);}
-
-  .console{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    padding:20px clamp(16px,3vw,26px);}
-  .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
-  .tab{background:transparent;border:1px solid var(--line);color:var(--text-dim);
-    font-family:'IBM Plex Mono',monospace;font-size:12px;padding:7px 14px;border-radius:20px;
-    cursor:pointer;transition:all .15s;}
-  .tab:hover{color:var(--text);}
-  .tab.active{background:var(--surface-2);color:var(--gold);border-color:var(--gold);}
-  .subtabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line);}
-  .subtab{background:transparent;border:none;color:var(--text-dim);font-size:13px;
-    padding:8px 4px;margin-right:18px;cursor:pointer;border-bottom:2px solid transparent;}
-  .subtab.active{color:var(--text);border-bottom-color:var(--gold);}
-  .subview{display:none;}
-  .subview.active{display:block;}
-
-  .console-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;}
-  @media (max-width:760px){.console-grid{grid-template-columns:1fr;}}
-
+  .empty-row td{color:var(--text-dim);font-style:italic;padding:20px 12px;text-align:center;}
+ 
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+  .badge.proactive{background:var(--primary-100);color:var(--primary);}
+  .badge.reactive{background:var(--danger-100);color:var(--danger);}
+  .badge.flagged{background:var(--danger-100);color:var(--danger);}
+  .badge.clean{background:var(--success-100);color:var(--success);}
+ 
+  /* ===== bank pills ===== */
+  .pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+  .pill{background:var(--surface);border:1px solid var(--line);color:var(--text-dim);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 13px;border-radius:20px;cursor:pointer;}
+  .pill:hover{border-color:var(--primary);color:var(--text);}
+  .pill.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+ 
+  /* ===== bank grid (Banks page) ===== */
+  .bank-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .bank-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;cursor:pointer;transition:border-color .12s,box-shadow .12s;}
+  .bank-card:hover{border-color:var(--primary);box-shadow:0 1px 4px rgba(30,58,95,0.08);}
+  .bank-card h3{font-size:14px;font-family:'IBM Plex Mono',monospace;}
+  .bank-card .row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-dim);margin-top:10px;}
+  .bank-card .row b{color:var(--text);font-family:'IBM Plex Mono',monospace;font-weight:600;}
+  .back-link{font-size:13px;margin-bottom:14px;display:inline-block;}
+ 
+  /* ===== forms ===== */
+  .form-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;}
+  @media (max-width:700px){.form-grid{grid-template-columns:1fr;}}
   form{display:flex;flex-direction:column;gap:12px;}
   label{font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px;}
-  input{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;
-    color:var(--text);padding:9px 11px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;}
-  input:focus{border-color:var(--teal);}
+  input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:6px;
+    color:var(--text);padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;}
+  input:focus{border-color:var(--primary);}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  button.submit{margin-top:6px;background:var(--gold);color:#1a1305;border:none;border-radius:6px;
-    padding:11px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;cursor:pointer;}
-  button.submit:hover{filter:brightness(1.08);}
-  .hint{font-size:11px;color:var(--text-dim);}
-
-  .result{margin-top:14px;padding:12px 14px;border-radius:8px;font-size:13px;display:none;}
+  button.submit{margin-top:4px;background:var(--primary);color:#fff;border:none;border-radius:6px;
+    padding:10px;font-weight:600;font-size:13.5px;cursor:pointer;}
+  button.submit:hover{background:#17304e;}
+  button.secondary{background:var(--surface);border:1px solid var(--line);border-radius:6px;
+    padding:9px 14px;font-size:13px;color:var(--text);cursor:pointer;}
+  button.secondary:hover{border-color:var(--primary);}
+  .hint{font-size:11.5px;color:var(--text-dim);}
+ 
+  .result{margin-top:12px;padding:11px 13px;border-radius:6px;font-size:13px;display:none;border:1px solid transparent;}
   .result.show{display:block;}
-  .result.clean{background:rgba(62,124,140,0.12);border:1px solid rgba(62,124,140,0.35);}
-  .result.flagged{background:rgba(193,68,60,0.12);border:1px solid rgba(193,68,60,0.35);}
+  .result.clean{background:var(--success-100);border-color:rgba(47,125,93,0.3);color:var(--success);}
+  .result.flagged{background:var(--danger-100);border-color:rgba(179,38,30,0.25);color:var(--danger);}
   .result .fp{display:block;margin-top:6px;word-break:break-all;color:var(--text-dim);}
-
-  .filter-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
-  select{background:var(--surface-2);border:1px solid var(--line);color:var(--text);
-    border-radius:6px;padding:7px 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;}
-
-  footer{text-align:center;padding:26px;color:var(--text-dim);font-size:12px;border-top:1px solid var(--line);}
+ 
+  select{background:var(--surface);border:1px solid var(--line);color:var(--text);
+    border-radius:6px;padding:6px 10px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;}
 </style>
 </head>
 <body>
-
-<header>
-  <div class="brand">
-    <svg class="brand-mark" viewBox="0 0 40 40"><circle cx="20" cy="20" r="4" fill="#C9A227"/>
-      <circle cx="7" cy="8" r="3" fill="#3E7C8C"/><circle cx="33" cy="8" r="3" fill="#3E7C8C"/>
-      <circle cx="20" cy="34" r="3" fill="#3E7C8C"/>
-      <line x1="20" y1="20" x2="7" y2="8" stroke="#3E7C8C" stroke-width="1"/>
-      <line x1="20" y1="20" x2="33" y2="8" stroke="#3E7C8C" stroke-width="1"/>
-      <line x1="20" y1="20" x2="20" y2="34" stroke="#3E7C8C" stroke-width="1"/></svg>
-    <div><h1>FraudMesh</h1><p>Cross-institution fraud signal network — v1 proof of concept</p></div>
-  </div>
-  <nav class="primary" id="primary-nav">
-    <button data-view="overview" class="active">Overview</button>
-    <button data-view="console">Bank console</button>
-    <button data-view="alerts">Alert log</button>
-  </nav>
-  <div class="status"><span class="dot"></span> network live</div>
-</header>
-
-<main>
-
-  <!-- ===== OVERVIEW ===== -->
-  <section class="view" id="view-overview">
-    <div class="mesh-panel">
-      <svg viewBox="0 0 620 220">
-        <line class="mesh-line" x1="150" y1="60" x2="310" y2="140"/>
-        <line class="mesh-line" x1="470" y1="60" x2="310" y2="140"/>
-        <line class="mesh-line" x1="310" y1="200" x2="310" y2="140"/>
-        <circle id="hub-pulse" class="pulse-ring" cx="310" cy="140" r="26"/>
-        <circle class="hub-circle" cx="310" cy="140" r="24"/>
-        <text x="310" y="145" text-anchor="middle" class="node-label" fill="#C9A227">SHARED</text>
-        <circle class="node-circle" data-bank="bank_a" cx="150" cy="60" r="20"/>
-        <text x="150" y="65" text-anchor="middle" class="node-label" style="pointer-events:none;">bank_a</text>
-        <circle class="node-circle" data-bank="bank_b" cx="470" cy="60" r="20"/>
-        <text x="470" y="65" text-anchor="middle" class="node-label" style="pointer-events:none;">bank_b</text>
-        <circle class="node-circle" data-bank="bank_c" cx="310" cy="200" r="20"/>
-        <text x="310" y="205" text-anchor="middle" class="node-label" style="pointer-events:none;">bank_c</text>
+<div class="app">
+ 
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="4" fill="#1E3A5F"/>
+        <circle cx="7" cy="8" r="3" fill="#8C9AAE"/><circle cx="33" cy="8" r="3" fill="#8C9AAE"/>
+        <circle cx="20" cy="34" r="3" fill="#8C9AAE"/>
+        <line x1="20" y1="20" x2="7" y2="8" stroke="#B7C1CE" stroke-width="1"/>
+        <line x1="20" y1="20" x2="33" y2="8" stroke="#B7C1CE" stroke-width="1"/>
+        <line x1="20" y1="20" x2="20" y2="34" stroke="#B7C1CE" stroke-width="1"/>
       </svg>
+      <span>FraudMesh</span>
     </div>
-    <p class="mesh-hint">click a bank node to open its console</p>
-
-    <div class="stats">
-      <div class="stat"><div class="eyebrow">Transactions seen</div><div class="value mono" id="stat-total">—</div></div>
-      <div class="stat gold"><div class="eyebrow">Flagged locally</div><div class="value mono" id="stat-flagged">—</div></div>
-      <div class="stat"><div class="eyebrow">Watchlist size</div><div class="value mono" id="stat-watchlist">—</div></div>
-      <div class="stat danger"><div class="eyebrow">Cross-bank alerts</div><div class="value mono" id="stat-alerts">—</div></div>
+    <div class="topbar-right">
+      <span class="env-tag">v1 demo</span>
+      <span class="status-dot"><i></i> network live</span>
     </div>
-
-    <section class="block">
-      <div class="block-head"><h2>Latest activity</h2><span><a href="#" data-view-link="alerts">view full alert log →</a></span></div>
-      <table>
-        <thead><tr><th class="fp">Fingerprint</th><th>Banks involved</th><th>Type</th><th>When</th></tr></thead>
-        <tbody id="alerts-preview-body"><tr class="empty-row"><td colspan="4">No cross-bank alerts yet.</td></tr></tbody>
-      </table>
-    </section>
-  </section>
-
-  <!-- ===== BANK CONSOLE ===== -->
-  <section class="view hidden" id="view-console">
-    <section class="block" style="margin-top:20px;">
-      <div class="block-head"><h2>Bank console</h2></div>
-      <div class="console">
-        <div class="tabs" id="bank-tabs"></div>
-
-        <div class="subtabs">
-          <button class="subtab active" data-sub="watchlist">Watchlist</button>
-          <button class="subtab" data-sub="transactions">Transactions</button>
-          <button class="subtab" data-sub="simulate">Simulate</button>
-        </div>
-
-        <div class="subview active" id="sub-watchlist">
-          <table>
-            <thead><tr><th class="fp">Fingerprint</th><th>Source</th><th>Matches</th></tr></thead>
-            <tbody id="watchlist-body"><tr class="empty-row"><td colspan="3">Loading…</td></tr></tbody>
-          </table>
-        </div>
-
-        <div class="subview" id="sub-transactions">
-          <table>
-            <thead><tr><th>Name</th><th>Account</th><th>Amount</th><th>Status</th><th>When</th></tr></thead>
-            <tbody id="transactions-body"><tr class="empty-row"><td colspan="5">Loading…</td></tr></tbody>
-          </table>
-        </div>
-
-        <div class="subview" id="sub-simulate">
-          <div class="console-grid">
-            <div>
-              <h3 style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Submit test transaction</h3>
-              <form id="txn-form">
-                <div><label for="f-name">Name</label><input id="f-name" required placeholder="Jordan Casey"></div>
-                <div class="row2">
-                  <div><label for="f-dob">Date of birth</label><input id="f-dob" required placeholder="1990-04-12"></div>
-                  <div><label for="f-last4">Account last 4</label><input id="f-last4" required maxlength="4" placeholder="7781"></div>
-                </div>
-                <div class="row2">
-                  <div><label for="f-amount">Amount ($)</label><input id="f-amount" type="number" step="0.01" required placeholder="6000"></div>
-                  <div><label for="f-device">Device ID</label><input id="f-device" placeholder="optional"></div>
-                </div>
-                <p class="hint">Amounts ≥ 5000 or a device ID starting with "unknown" trigger a flag.</p>
-                <button class="submit" type="submit">Send transaction</button>
-              </form>
-              <div class="result" id="txn-result"></div>
-            </div>
-            <div>
-              <h3 style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Try the ring scenario</h3>
-              <p class="hint" style="margin-bottom:10px;">Submit the same identity (name + DOB + last 4) on two
-                different bank tabs with an amount over 5000 — the second one should trigger a proactive alert
-                in the log, instantly, before you do anything else.</p>
-              <button class="tab" id="fill-ring" type="button">Fill form with sample identity</button>
+  </header>
+ 
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="side-nav" id="primary-nav">
+        <button data-view="overview" class="active">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+          Overview
+        </button>
+        <button data-view="banks">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8l7-5 7 5"/><rect x="4" y="8" width="12" height="8" rx="1"/><line x1="8" y1="12" x2="8" y2="16"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+          Banks
+        </button>
+        <button data-view="transactions">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="4" y1="5" x2="16" y2="5"/><line x1="4" y1="10" x2="16" y2="10"/><line x1="4" y1="15" x2="10" y2="15"/></svg>
+          Transactions
+        </button>
+        <button data-view="alerts">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2l8 15H2z"/><line x1="10" y1="8" x2="10" y2="12"/><circle cx="10" cy="14.5" r="0.6" fill="currentColor"/></svg>
+          Fraud Alerts
+        </button>
+      </nav>
+      <div class="sidebar-note">No login required — banks are simulated network nodes, not user accounts, in this v1 demo.</div>
+    </aside>
+ 
+    <div class="content-wrap">
+      <main>
+ 
+        <!-- ===== OVERVIEW ===== -->
+        <section class="view" id="view-overview">
+          <div class="page-head">
+            <h1>Network overview</h1>
+            <p>Live status across every participating bank node and the shared fingerprint network.</p>
+          </div>
+ 
+          <div class="stat-grid">
+            <div class="stat-card"><div class="eyebrow">Transactions seen</div><div class="value" id="stat-total">—</div></div>
+            <div class="stat-card primary"><div class="eyebrow">Flagged locally</div><div class="value" id="stat-flagged">—</div></div>
+            <div class="stat-card"><div class="eyebrow">Watchlist size</div><div class="value" id="stat-watchlist">—</div></div>
+            <div class="stat-card danger"><div class="eyebrow">Cross-bank alerts</div><div class="value" id="stat-alerts">—</div></div>
+          </div>
+ 
+          <div class="card block">
+            <div class="card-head"><h2>Network topology</h2><span class="meta">3 banks · 1 shared ledger</span></div>
+            <div class="card-body">
+              <div class="diagram-wrap">
+                <svg viewBox="0 0 520 190">
+                  <line id="line-a" class="mesh-line" x1="130" y1="50" x2="260" y2="120"/>
+                  <line id="line-b" class="mesh-line" x1="390" y1="50" x2="260" y2="120"/>
+                  <line id="line-c" class="mesh-line" x1="260" y1="170" x2="260" y2="120"/>
+                  <circle class="hub-circle" cx="260" cy="120" r="22"/>
+                  <text x="260" y="124" text-anchor="middle" class="node-label" font-weight="600">SHARED</text>
+                  <circle class="node-circle" cx="130" cy="50" r="18"/>
+                  <text x="130" y="54" text-anchor="middle" class="node-label">bank_a</text>
+                  <circle class="node-circle" cx="390" cy="50" r="18"/>
+                  <text x="390" y="54" text-anchor="middle" class="node-label">bank_b</text>
+                  <circle class="node-circle" cx="260" cy="170" r="18"/>
+                  <text x="260" y="174" text-anchor="middle" class="node-label">bank_c</text>
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <!-- ===== ALERT LOG ===== -->
-  <section class="view hidden" id="view-alerts">
-    <section class="block" style="margin-top:20px;">
-      <div class="block-head"><h2>Full alert log</h2><span id="alerts-updated"></span></div>
-      <div class="filter-row">
-        <label for="alert-filter" style="margin:0;">filter by bank</label>
-        <select id="alert-filter">
-          <option value="all">all banks</option>
-          <option value="bank_a">bank_a</option>
-          <option value="bank_b">bank_b</option>
-          <option value="bank_c">bank_c</option>
-        </select>
-      </div>
-      <table>
-        <thead><tr><th class="fp">Fingerprint</th><th>Banks involved</th><th>Type</th><th>When</th></tr></thead>
-        <tbody id="alerts-body"><tr class="empty-row"><td colspan="4">No cross-bank alerts yet.</td></tr></tbody>
-      </table>
-    </section>
-  </section>
-
-</main>
-
-<footer>FraudMesh is a v1 demo — hash-based matching stands in for secure multi-party computation in a production system. Raw API endpoints (e.g. <span class="mono">/dashboard/alerts</span>) intentionally return JSON — this page is the client that consumes them.</footer>
-
+ 
+          <div class="card block">
+            <div class="card-head"><h2>Latest activity</h2><a href="#" data-view-link="alerts" style="font-size:12px;">view all →</a></div>
+            <div class="card-body" style="padding:0;">
+              <table>
+                <thead><tr><th class="fp">Fingerprint</th><th>Banks involved</th><th>Type</th><th>When</th></tr></thead>
+                <tbody id="alerts-preview-body"><tr class="empty-row"><td colspan="4">No cross-bank alerts yet.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+ 
+        <!-- ===== BANKS ===== -->
+        <section class="view hidden" id="view-banks">
+          <div class="page-head"><h1>Banks</h1><p>Each bank runs independent rule checks on its own private data.</p></div>
+ 
+          <div id="bank-grid-wrap">
+            <div class="bank-grid" id="bank-grid"></div>
+          </div>
+ 
+          <div id="bank-detail-wrap" class="hidden">
+            <a href="#" class="back-link" id="bank-back">← all banks</a>
+            <div class="card">
+              <div class="card-head"><h2 id="bank-detail-title">bank_a — watchlist</h2></div>
+              <div class="card-body" style="padding:0;">
+                <table>
+                  <thead><tr><th class="fp">Fingerprint</th><th>Source bank</th><th>Match count</th></tr></thead>
+                  <tbody id="watchlist-body"><tr class="empty-row"><td colspan="3">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+ 
+        <!-- ===== TRANSACTIONS ===== -->
+        <section class="view hidden" id="view-transactions">
+          <div class="page-head"><h1>Transactions</h1><p>Browse a bank's transaction history, or submit a test transaction.</p></div>
+ 
+          <div class="pill-row" id="txn-bank-pills"></div>
+ 
+          <div class="card block">
+            <div class="card-head"><h2>Recent transactions</h2></div>
+            <div class="card-body" style="padding:0;">
+              <table>
+                <thead><tr><th>Name</th><th>Account</th><th>Amount</th><th>Status</th><th>When</th></tr></thead>
+                <tbody id="transactions-body"><tr class="empty-row"><td colspan="5">Loading…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+ 
+          <div class="card block">
+            <div class="card-head"><h2>Submit test transaction</h2></div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div>
+                  <form id="txn-form">
+                    <div><label for="f-name">Name</label><input id="f-name" required placeholder="Jordan Casey"></div>
+                    <div class="row2">
+                      <div><label for="f-dob">Date of birth</label><input id="f-dob" required placeholder="1990-04-12"></div>
+                      <div><label for="f-last4">Account last 4</label><input id="f-last4" required maxlength="4" placeholder="7781"></div>
+                    </div>
+                    <div class="row2">
+                      <div><label for="f-amount">Amount ($)</label><input id="f-amount" type="number" step="0.01" required placeholder="6000"></div>
+                      <div><label for="f-device">Device ID</label><input id="f-device" placeholder="optional"></div>
+                    </div>
+                    <p class="hint">Amounts ≥ 5000 or a device ID starting with "unknown" trigger a flag.</p>
+                    <button class="submit" type="submit">Send transaction</button>
+                  </form>
+                  <div class="result" id="txn-result"></div>
+                </div>
+                <div>
+                  <label style="margin-bottom:8px;">Try the ring scenario</label>
+                  <p class="hint" style="margin-bottom:10px;">Submit the same identity on two different bank tabs with
+                    an amount over 5000 — the second submission should trigger a proactive alert immediately.</p>
+                  <button class="secondary" id="fill-ring" type="button">Fill sample identity</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+ 
+        <!-- ===== FRAUD ALERTS ===== -->
+        <section class="view hidden" id="view-alerts">
+          <div class="page-head"><h1>Fraud alerts</h1><p>Every reactive and proactive cross-bank match detected by the network.</p></div>
+ 
+          <div class="card block">
+            <div class="card-head">
+              <h2>Alert log</h2>
+              <select id="alert-filter">
+                <option value="all">all banks</option>
+                <option value="bank_a">bank_a</option>
+                <option value="bank_b">bank_b</option>
+                <option value="bank_c">bank_c</option>
+              </select>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table>
+                <thead><tr><th class="fp">Fingerprint</th><th>Banks involved</th><th>Type</th><th>When</th></tr></thead>
+                <tbody id="alerts-body"><tr class="empty-row"><td colspan="4">No cross-bank alerts yet.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+ 
+      </main>
+ 
+      <footer class="site-footer">
+        FraudMesh v1 — proof of concept. Hash-based matching stands in for secure multi-party computation in a production system.
+      </footer>
+    </div>
+  </div>
+</div>
+ 
 <script>
 const BANKS = ["bank_a", "bank_b", "bank_c"];
 let activeBank = BANKS[0];
-let activeSub = "watchlist";
+let activeDetailBank = null;
 let allAlerts = [];
 let lastAlertCount = 0;
-
+ 
+/* ---------- primary nav ---------- */
 function showView(name){
   document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
   document.getElementById("view-" + name).classList.remove("hidden");
   document.querySelectorAll("#primary-nav button").forEach(b =>
     b.classList.toggle("active", b.dataset.view === name));
-  if (name === "console") { loadWatchlist(); loadTransactions(); }
+  if (name === "banks") loadBankGrid();
+  if (name === "transactions") { renderTxnPills(); loadTransactions(); }
   if (name === "alerts") renderAlerts();
 }
-document.querySelectorAll("#primary-nav button").forEach(b =>
-  b.onclick = () => showView(b.dataset.view));
+document.querySelectorAll("#primary-nav button").forEach(b => b.onclick = () => showView(b.dataset.view));
 document.querySelectorAll("[data-view-link]").forEach(a =>
   a.onclick = (e) => { e.preventDefault(); showView(a.dataset.viewLink); });
-
-document.querySelectorAll(".node-circle").forEach(n => {
-  n.addEventListener("click", () => {
-    activeBank = n.dataset.bank;
-    renderBankTabs();
-    showView("console");
-  });
-});
-
-function renderBankTabs(){
-  const wrap = document.getElementById("bank-tabs");
-  wrap.innerHTML = "";
-  BANKS.forEach(b => {
-    const btn = document.createElement("button");
-    btn.className = "tab" + (b === activeBank ? " active" : "");
-    btn.textContent = b;
-    btn.onclick = () => { activeBank = b; renderBankTabs(); loadWatchlist(); loadTransactions(); };
-    wrap.appendChild(btn);
-  });
-}
-
-document.querySelectorAll(".subtab").forEach(t => {
-  t.onclick = () => {
-    activeSub = t.dataset.sub;
-    document.querySelectorAll(".subtab").forEach(x => x.classList.toggle("active", x === t));
-    document.querySelectorAll(".subview").forEach(v => v.classList.remove("active"));
-    document.getElementById("sub-" + activeSub).classList.add("active");
-  };
-});
-
+ 
+/* ---------- helpers ---------- */
 function timeAgo(iso){
   const s = Math.floor((Date.now() - new Date(iso + "Z")) / 1000);
   if (s < 60) return s + "s ago";
@@ -329,20 +379,22 @@ function timeAgo(iso){
   return Math.floor(s/3600) + "h ago";
 }
 function short(fp){ return fp.slice(0,10) + "…" + fp.slice(-6); }
-
+ 
+/* ---------- overview ---------- */
 async function loadSummary(){
   try{
     const r = await fetch("/dashboard/summary");
     const data = await r.json();
     const total = data.banks.reduce((a,b)=>a+b.total_transactions,0);
     const flagged = data.banks.reduce((a,b)=>a+b.flagged,0);
-    document.getElementById("stat-total").textContent = String(total).padStart(4,"0");
-    document.getElementById("stat-flagged").textContent = String(flagged).padStart(4,"0");
-    document.getElementById("stat-watchlist").textContent = String(data.total_watchlist_entries).padStart(4,"0");
-    document.getElementById("stat-alerts").textContent = String(data.total_alerts).padStart(4,"0");
+    document.getElementById("stat-total").textContent = total;
+    document.getElementById("stat-flagged").textContent = flagged;
+    document.getElementById("stat-watchlist").textContent = data.total_watchlist_entries;
+    document.getElementById("stat-alerts").textContent = data.total_alerts;
+    window._lastSummary = data;
   }catch(e){ console.error("summary load failed", e); }
 }
-
+ 
 function alertRow(a){
   return `<tr>
     <td class="fp">${short(a.fingerprint)}</td>
@@ -351,50 +403,78 @@ function alertRow(a){
     <td class="mono">${timeAgo(a.created_at)}</td>
   </tr>`;
 }
-
-function renderAlerts(){
-  const filter = document.getElementById("alert-filter").value;
-  const filtered = filter === "all" ? allAlerts : allAlerts.filter(a => a.banks_involved.includes(filter));
-  const body = document.getElementById("alerts-body");
-  body.innerHTML = filtered.length
-    ? filtered.map(alertRow).join("")
-    : '<tr class="empty-row"><td colspan="4">No alerts match this filter.</td></tr>';
-  document.getElementById("alerts-updated").textContent = "updated " + new Date().toLocaleTimeString();
-}
-document.getElementById("alert-filter").onchange = renderAlerts;
-
+ 
 async function loadAlerts(){
   try{
     const r = await fetch("/dashboard/alerts");
     allAlerts = await r.json();
-
     const preview = document.getElementById("alerts-preview-body");
     preview.innerHTML = allAlerts.length
       ? allAlerts.slice(0,5).map(alertRow).join("")
       : '<tr class="empty-row"><td colspan="4">No cross-bank alerts yet.</td></tr>';
-
     if (!document.getElementById("view-alerts").classList.contains("hidden")) renderAlerts();
-
+ 
     if (allAlerts.length > lastAlertCount){
-      const ring = document.getElementById("hub-pulse");
-      ring.classList.remove("active"); void ring.offsetWidth; ring.classList.add("active");
+      document.querySelectorAll(".mesh-line").forEach(l => {
+        l.classList.add("alert-flash");
+        setTimeout(() => l.classList.remove("alert-flash"), 900);
+      });
     }
     lastAlertCount = allAlerts.length;
   }catch(e){ console.error("alerts load failed", e); }
 }
-
-async function loadWatchlist(){
+ 
+/* ---------- banks ---------- */
+async function loadBankGrid(){
+  document.getElementById("bank-grid-wrap").classList.remove("hidden");
+  document.getElementById("bank-detail-wrap").classList.add("hidden");
+  const grid = document.getElementById("bank-grid");
+  grid.innerHTML = "";
+  try{
+    const r = await fetch("/dashboard/summary");
+    const data = await r.json();
+    data.banks.forEach(b => {
+      const card = document.createElement("div");
+      card.className = "bank-card";
+      card.innerHTML = `<h3>${b.bank_id}</h3>
+        <div class="row"><span>Transactions</span><b>${b.total_transactions}</b></div>
+        <div class="row"><span>Flagged</span><b>${b.flagged}</b></div>`;
+      card.onclick = () => openBankDetail(b.bank_id);
+      grid.appendChild(card);
+    });
+  }catch(e){ console.error("bank grid load failed", e); }
+}
+ 
+async function openBankDetail(bankId){
+  activeDetailBank = bankId;
+  document.getElementById("bank-grid-wrap").classList.add("hidden");
+  document.getElementById("bank-detail-wrap").classList.remove("hidden");
+  document.getElementById("bank-detail-title").textContent = `${bankId} — watchlist`;
   const body = document.getElementById("watchlist-body");
   body.innerHTML = '<tr class="empty-row"><td colspan="3">Loading…</td></tr>';
   try{
-    const r = await fetch(`/banks/${activeBank}/watchlist`);
+    const r = await fetch(`/banks/${bankId}/watchlist`);
     const entries = await r.json();
     body.innerHTML = entries.length
       ? entries.map(e => `<tr><td class="fp">${short(e.fingerprint)}</td><td>${e.source_bank}</td><td class="mono">${e.match_count}</td></tr>`).join("")
       : '<tr class="empty-row"><td colspan="3">Watchlist is empty.</td></tr>';
   }catch(e){ console.error("watchlist load failed", e); }
 }
-
+document.getElementById("bank-back").onclick = (e) => { e.preventDefault(); loadBankGrid(); };
+ 
+/* ---------- transactions ---------- */
+function renderTxnPills(){
+  const wrap = document.getElementById("txn-bank-pills");
+  wrap.innerHTML = "";
+  BANKS.forEach(b => {
+    const btn = document.createElement("button");
+    btn.className = "pill" + (b === activeBank ? " active" : "");
+    btn.textContent = b;
+    btn.onclick = () => { activeBank = b; renderTxnPills(); loadTransactions(); };
+    wrap.appendChild(btn);
+  });
+}
+ 
 async function loadTransactions(){
   const body = document.getElementById("transactions-body");
   body.innerHTML = '<tr class="empty-row"><td colspan="5">Loading…</td></tr>';
@@ -412,7 +492,7 @@ async function loadTransactions(){
       : '<tr class="empty-row"><td colspan="5">No transactions yet for this bank.</td></tr>';
   }catch(e){ console.error("transactions load failed", e); }
 }
-
+ 
 document.getElementById("txn-form").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const payload = {
@@ -434,23 +514,35 @@ document.getElementById("txn-form").addEventListener("submit", async (ev) => {
     resultBox.innerHTML = data.flagged
       ? `Flagged — ${data.reason}<span class="fp mono">fingerprint: ${data.fingerprint}</span>`
       : "Not flagged — transaction looks routine.";
-    loadSummary(); loadAlerts(); loadWatchlist(); loadTransactions();
+    loadSummary(); loadAlerts(); loadTransactions();
   }catch(e){
     resultBox.className = "result show flagged";
     resultBox.textContent = "Request failed — is the bank_id valid and the server awake?";
   }
 });
-
+ 
 document.getElementById("fill-ring").onclick = () => {
   document.getElementById("f-name").value = "Jordan Casey";
   document.getElementById("f-dob").value = "1990-04-12";
   document.getElementById("f-last4").value = "7781";
   document.getElementById("f-amount").value = "6500";
 };
-
-renderBankTabs();
-loadSummary(); loadAlerts(); loadWatchlist(); loadTransactions();
+ 
+/* ---------- alerts ---------- */
+function renderAlerts(){
+  const filter = document.getElementById("alert-filter").value;
+  const filtered = filter === "all" ? allAlerts : allAlerts.filter(a => a.banks_involved.includes(filter));
+  const body = document.getElementById("alerts-body");
+  body.innerHTML = filtered.length
+    ? filtered.map(alertRow).join("")
+    : '<tr class="empty-row"><td colspan="4">No alerts match this filter.</td></tr>';
+}
+document.getElementById("alert-filter").onchange = renderAlerts;
+ 
+/* ---------- boot ---------- */
+loadSummary(); loadAlerts();
 setInterval(() => { loadSummary(); loadAlerts(); }, 6000);
 </script>
 </body>
 </html>
+ 
