@@ -40,7 +40,8 @@ def create_bank(payload: BankIn):
         session.close()
         raise HTTPException(status_code=409, detail=f"Bank '{bank_id}' already exists")
 
-    bank = Bank(id=bank_id, display_name=payload.display_name or bank_id)
+    display_name = payload.display_name or bank_id
+    bank = Bank(id=bank_id, display_name=display_name)
     session.add(bank)
     session.commit()
     session.close()
